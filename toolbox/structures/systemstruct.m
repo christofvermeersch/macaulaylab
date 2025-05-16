@@ -74,8 +74,8 @@ classdef systemstruct < problemstruct
                         poly(j,1) = monomial(1);
                         poly(j,2:end) = monomial(2);
                     end
-                    if length(variables) == 1 
-                        eqs{i} = [poly(:,1:idx) poly(:,idx+2:end)]
+                    if exist("additionalvariable", "var")
+                        eqs{i} = [poly(:,1:idx) poly(:,idx+2:end)];
                     else
                         eqs{i} = poly;
                     end
