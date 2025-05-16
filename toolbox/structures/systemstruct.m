@@ -17,7 +17,10 @@ classdef systemstruct < problemstruct
     %
     %   See also PROBLEMSTRUCT, MEPSTRUCT.
 
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2025 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2025: added support for univariate symbolic polynomials.
     %
     % The included conversion from a symbolic representation to the
     % system structure used in MacaulayLab is based on the code of Oscar
@@ -54,19 +57,28 @@ classdef systemstruct < problemstruct
                     
                 symboliceqs = eqs;
                 variables = symvar(symboliceqs);
+                if length(variables) == 1
+                    syms additionalvariable 
+                    symboliceqs(s+1) = additionalvariable;
+                    variables = symvar(symboliceqs)
+                    idx = find(variables == additionalvariable)
+                end
                 variablenames = char(variables);
-                
                 eqs = cell(s,1);
                 for i = 1:s
-                   t = feval(symengine,"poly2list",vpa(symboliceqs(i)), ...
-                       variablenames);
-                   poly = zeros(length(t),length(variables)+1);
-                   for j = 1:length(t)
-                       monomial = t(j);
-                       poly(j,1) = monomial(1);
-                       poly(j,2:end) = monomial(2);
-                   end 
-                   eqs{i} = poly;
+                    t = feval(symengine,"poly2list",vpa(symboliceqs(i)), ...
+                        variablenames);
+                    poly = zeros(length(t),length(variables)+1);
+                    for j = 1:length(t)
+                        monomial = t(j);
+                        poly(j,1) = monomial(1);
+                        poly(j,2:end) = monomial(2);
+                    end
+                    if length(variables) == 1 
+                        eqs{i} = [poly(:,1:idx) poly(:,idx+2:end)]
+                    else
+                        eqs{i} = poly;
+                    end
                 end
             end
             
