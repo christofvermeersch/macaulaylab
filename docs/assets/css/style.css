@@ -1,39 +1,44 @@
 :root {
-    --primary-color: blue;
-    --secondary-color: #3d405b;
-    --tertiary-color: #81b29a;
+    --primary-color: #0055a5;
+    --secondary-color: #d73027;
+    --tertiary-color: #838383;
     --text-color: #000000;
     --text-color-light: #ffffff;
 }
 
 body {
-    font-family: "Segoe UI", sans-serif;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 100;
     color: var(--text-color);
+    /* background-color: var(--tertiary-color); */
+}
+
+a {
+    color: var(--primary-color);
 }
 
 .banner {
-    background-image: url("../images/solutions.png");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 300px; 
-    justify-content: center;
+    background-color: var(--tertiary-color);
+    color: var(--text-color-light);
+    height: 500px; 
+    text-align: center;
     align-items: center;
     display: flex;
-    background-blend-mode: lighten;
 }
 
-.content {
-    text-align: center;
+.card {
+    border-radius: 15px;
+    border-color: var(--primary-color);
 }
 
 .btn-primary {
     background-color: var(--primary-color);
     color: var(--text-color-light);
     border: none;
+    border-radius: 15px;
 }
 .bg-primary {
-    background-color: var(--primary-color) !important;
+    background-color: var(--tertiary-color) !important;
 }
 
 .bg-primary a {
