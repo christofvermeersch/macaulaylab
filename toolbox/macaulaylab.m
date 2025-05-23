@@ -351,7 +351,6 @@ function print(component,varargin)
 
     switch component
         case "about"
-            clc
             fileId = fopen('about.txt');
             about = fscanf(fileId,'%c');
             fclose(fileId);
