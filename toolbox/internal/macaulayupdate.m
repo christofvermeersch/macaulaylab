@@ -48,7 +48,7 @@ function M = macaulayupdate(N,problem,d,varargin)
     cumshifts = [0; cumsum(newshifts)];
 
     % Create the monomial vectors:
-    K = monomials(d - min(horzcat(di{:})),n);
+    K = monomials(d - min(horzcat(di{:})),n,order);
     
     % Compute the (block) Macaulay data:
     M = zeros(elements(end),3);
