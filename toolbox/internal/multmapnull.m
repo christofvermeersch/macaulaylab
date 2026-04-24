@@ -73,12 +73,7 @@ function [A,B] = multmapnull(Z,K,G,idx,varargin)
 
         % Create second generalized multiplication map:
         S = rowshift(d,n,idx,G{i},blocksize,basis,order);
-        R = S(:,selection);
-        Y = zeros(length(idx),size(Z,2));
-        for j = 1:length(idx)
-            Y(j,:) = R(j,:)*Z;
-        end
-        B{i} = Y;
+        B{i} = S(1:length(idx),selection)*Z;
     end
    
     % Change output to array when input shift polynomial is an array:
