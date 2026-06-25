@@ -1,25 +1,42 @@
-function [dgap,ma,gapsize] = gap(Z,n,varargin)
-    %GAP   Gap zone of the basis matrix.
-    %   dgap = GAP(Z,n) returns the first degree of the gap zone in the
+function [dgap, ma, gapsize] = gap(Z, m, varargin)
+    %GAP - Gap zone of the basis matrix.
+    %   dgap = GAP(Z, m) returns the first degree of the gap zone in the
     %   given basis matrix or NaN if there is no gap zone.
     %
-    %   [dgap,ma,gapsize] = GAP(Z,n) also returns the number of affine
+    %   [dgap, ma, gapsize] = GAP(...) also returns the number of affine
     %   solutions and the size of the gap zone (in number of degree
     %   blocks).
     %
-    %   [...] = GAP(...,blocksize) considers the number of rows in the
+    %   [...] = GAP(..., blocksize) considers the number of rows in the
     %   block rows (cf., the null space of block Macaulay matrix).
     %
-    %   [...] = GAP(...,tol) uses a user-specified tolerance for the
+    %   [...] = GAP(..., tol) uses a user-specified tolerance for the
     %   required rank checks.
     %
-    %   [...] = GAP(...,isRecursive) selects the recursive or iterative 
-    %   approach based on the flag. The default setting (flag = false) is 
+    %   [...] = GAP(..., isRecursive) selects the recursive or iterative
+    %   approach based on the flag. The default setting (flag = false) is
     %   not to use the recursive approach.
+    %
+    %   Input arguments:
+    %       - Z (double): basis matrix of the null space.
+    %       - m (int): number of variables.
+    %       - blocksize (int = 1 - optional): size of eigenvector.
+    %       - tol (double = 1e-10 - optional): tolerance for rank checks.
+    %       - isRecursive (logical = false - optional): flag to select the 
+    %           recursive (true) or iterative (false) approach.
+    %
+    %   Output arguments:
+    %       - dgap (int): first degree of the gap zone (NaN if none).
+    %       - ma (int): number of affine solutions.
+    %       - gapsize (int): size of the gap zone (in number of degree 
+    %           blocks).
     %
     %   See also STDMONOMIALS, COLUMNCOMPR, GAPSTDMONOMIALS.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Process the optional parameters:
     tol = 1e-10;
@@ -27,7 +44,7 @@ function [dgap,ma,gapsize] = gap(Z,n,varargin)
     blocksize = 1;
     for i = 1:nargin-2
         switch class(varargin{i})
-            case 'double'
+            case "double"
                 if varargin{i} < 1
                     tol = varargin{i};
                 else
@@ -44,16 +61,16 @@ function [dgap,ma,gapsize] = gap(Z,n,varargin)
     gapsize = 0;
     dgap = NaN;
     if isRecursive % recursive approach.
-        q = size(Z,2);
-        nm = blocksize*nbmonomials(0,n);
-        Y = null(Z(1:nm,:),tol);
-        ma = q - size(Y,2); 
+        q = size(Z, 2);
+        nm = blocksize*nbmonomials(0, m);
+        Y = null(Z(1:nm, :), tol);
+        ma = q - size(Y, 2); 
         k = 1;
-        while blocksize*nbmonomials(k,n) <= size(Z,1)
-            nm1 = blocksize*nbmonomials(k-1,n)+1;
-            nm2 = blocksize*nbmonomials(k,n);
-            Y = nullrecrrow(Y,Z(nm1:nm2,:));
-            r = q - size(Y,2);
+        while blocksize*nbmonomials(k, m) <= size(Z, 1)
+            nm1 = blocksize*nbmonomials(k-1, m)+1;
+            nm2 = blocksize*nbmonomials(k, m);
+            Y = nullrecrrow(Y, Z(nm1:nm2, :));
+            r = q - size(Y, 2);
             if ma == r
                 gapsize = gapsize + 1;
                 dgap = k - gapsize + 1;
@@ -69,9 +86,9 @@ function [dgap,ma,gapsize] = gap(Z,n,varargin)
     else % iterative approach.
         ma = 0;
         k = 1;
-        while blocksize*nbmonomials(k,n) <= size(Z,1)
-            nm = blocksize*nbmonomials(k,n);
-            r = rank(Z(1:nm,:),tol);
+        while blocksize*nbmonomials(k, m) <= size(Z, 1)
+            nm = blocksize*nbmonomials(k, m);
+            r = rank(Z(1:nm, :), tol);
             if ma == r
                 gapsize = gapsize + 1;
                 dgap = k - gapsize + 1;

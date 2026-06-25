@@ -24,9 +24,13 @@ classdef testmultmapcolumn < matlab.unittest.TestCase
             mep = mepstruct({A00,A01,A10},[0 0; 0 1; 1 0]);
             M = macaulay(mep,6);
             K = [monomials(6,2,2) kron(ones(1,nbmonomials(6,2)),1:2)'];
-            [A,B] = multmapcolumn(M,K,[4 0 3],[1 2 3],2);
-            actual = sort(eig(full(A),full(B)));
-            expected = sort([-10.3979; 0.0007; -0.2928]);
+            [A,B] = multmapcolumn(M,K,[1 1 0],[1 2 3],2);
+            actual1 = eig(full(B),full(A));
+            [A,B] = multmapcolumn(M,K,[1 0 1],[1 2 3],2);
+            actual2 = eig(full(B),full(A));
+            actual = sort([actual1; actual2]);
+            expected = sort([3.6026; 1.3683; 0.9338; ...
+                -0.4183; 0.0552; -1.3750]);
             testCase.verifyLessThanOrEqual(actual-expected,1e-3);
         end
 
@@ -50,20 +54,24 @@ classdef testmultmapcolumn < matlab.unittest.TestCase
             M = full(macaulay(system,3,@chebyshev));
             K = monomials(3,2);
             [A,B] = multmapcolumn(M,K,[1 1 0],[1 2],@chebyshev);
-            actual = sort(eig(full(A),full(B)));
+            actual = sort(eig(full(B),full(A)));
             expected = sort([2.2500 + 0.8292i; 2.2500 - 0.8292i]);
-            testCase.verifyLessThanOrEqual(actual-expected, ...
+            testCase.verifyLessThanOrEqual(abs(actual-expected), ...
                 1e-3);
         end
 
         function complextest(testCase)
-            V = vandermonde(2,2,[2 -1i; 4i 1]);
-            K = monomials(2,2);
-            [actualA,actualB] = multmapnull(V,K,[2i 0 1], [1 2]);
-            expectedA = [1 1; -1i 1];
-            expectedB = [2 2i; -2i 2i];
-            testCase.verifyEqual(actualA,expectedA);
-            testCase.verifyEqual(actualB,expectedB);
+            A00 = [2 + 1i 6i; 4 5; 0 1];
+            A10 = [1 0; 0 1; 1 1i];
+            A01 = [4 2; 0 8; 1i 1];
+            mep = mepstruct({A00,A01,A10},[0 0; 0 1; 1 0]);
+            M = macaulay(mep,6);
+            K = [monomials(6,2,2) kron(ones(1,nbmonomials(6,2)),1:2)'];
+            [A, B] = multmapcolumn(M,K,[2 - 2i 1 0],[1 2 3],2);
+            actual = sort(eig(full(B),full(A)));
+            expected = sort([37.4423 - 32.3973i; 3.5560 - 0.4899i; ...
+                1.1883 + 1.9109i]);
+            testCase.verifyLessThanOrEqual(actual-expected,1e-3);
         end
 
         function inputtest(testCase)
@@ -124,7 +132,7 @@ classdef testmultmapcolumn < matlab.unittest.TestCase
             K = K(remainder,:);
             [A,B] = multmapcolumn(M,K,[1 1 0; 1 0 1],[1 2]);
             actual = sort(eig(full(A),full(B)));
-            expected = sort([2; -2]);
+            expected = sort([0.5; -0.5]);
             testCase.verifyLessThanOrEqual(actual-expected, ...
                 testCase.tolerance);
         end

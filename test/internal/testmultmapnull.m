@@ -86,10 +86,13 @@ classdef testmultmapnull < matlab.unittest.TestCase
             system = systemstruct({p,q});
             Z = null(full(macaulay(system,3)));
             K = monomials(3,2);
-            [A,B] = multmapnull(Z,K,[ones(2,1) eye(2)],[1 2 3 5]);
-            actual = sort(eig(A,B));
+            [A,B] = multmapnull(Z,K,[ ones(2,1) eye(2)],[1 2 3 5]);
+            values = eig(A,B);
+            actual = sort(real(values));
             expected = [-1; -1; 1; 1];
             testCase.verifyLessThanOrEqual(actual-expected, ...
+                testCase.tolerance);
+            testCase.verifyLessThanOrEqual(imag(values), ...
                 testCase.tolerance);
         end
 

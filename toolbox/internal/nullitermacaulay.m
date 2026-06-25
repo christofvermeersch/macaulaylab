@@ -1,24 +1,42 @@
-function Z = nullitermacaulay(problem,d,varargin)
-    %NULLITERMACAULAY   Iterative null space basis matrix computation.
-    %   Z = NULLITERMACAULAY(problem,d) computes the basis matrix of the
+function Z = nullitermacaulay(problem, d, varargin)
+    %NULLITERMACAULAY - Iterative null space basis matrix computation.
+    %   Z = NULLITERMACAULAY(problem, d) computes the basis matrix of the
     %   null space of a Macaulay matrix of degree d for a given problem.
     %
-    %   Z = NULLITERMACAULAY(...,approach) uses a specific approach to
+    %   Z = NULLITERMACAULAY(..., approach) uses a specific approach to
     %   construct this basis matrix: "direct", "iterative", "recursive",
     %   and "sparse" are currently supported.
     %
-    %   Z = NULLITERMACAULAY(...,tol) uses a user-specified tolerance for
+    %   Z = NULLITERMACAULAY(..., tol) uses a user-specified tolerance for
     %   the rank decisions.
     %
-    %   Z = NULLITERMACAULAY(...,basis) uses a user-specified monomial
+    %   Z = NULLITERMACAULAY(..., basis) uses a user-specified monomial
     %   basis.
     %
-    %   Z = NULLITERMACAULAY(...,order) uses a user-specified monomial
+    %   Z = NULLITERMACAULAY(..., order) uses a user-specified monomial
     %   order.
     %
-    %   See also NULL, MACAULAYUPDATE, NULLRECRMACAULAY, NULLITERMACAULAY.
+    %   Input arguments:
+    %       - Z (double): basis matrix of the null space at the previous 
+    %           degree.
+    %       - problem (problemstruct or subclass): polynomial problem.
+    %       - d (int): new degree of the Macaulay matrix.
+    %       - tol (double = 1e-10 - optional): numerical tolerance.
+    %       - basis (function_handle = @monomial - optional): monomial 
+    %           basis.
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - Z (double): updated basis matrix of the null space.
+    %
+    %   See also NULL, MACAULAYUPDATE, NULLRECRMACAULAY,
+    %   NULLSPARSEMACAULAY.
 
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Process the optional parameters:
     basis = @monomial;
@@ -35,7 +53,7 @@ function Z = nullitermacaulay(problem,d,varargin)
                 end
             case "double"
                 tol = varargin{i};
-            case {"string","char"}
+            case {"string", "char"}
                 approach = varargin{i};
             otherwise
                 error("Argument type is not recognized.")
@@ -45,29 +63,29 @@ function Z = nullitermacaulay(problem,d,varargin)
     % Construct a basis matrix for the null space:
     switch approach
         case "direct"
-            M = macaulay(problem,d,basis,order);
+            M = macaulay(problem, d, basis, order);
             Z = null(full(M));
 
         case "iterative"
-            M = macaulay(problem,problem.dmax,basis,order);
+            M = macaulay(problem, problem.dmax, basis, order);
             Z = null(full(M));
             for i = problem.dmax+1:d
-                M = macaulayupdate(M,problem,i,basis,order);
+                M = macaulayupdate(M, problem, i, basis, order);
                 Z = null(full(M));
             end
 
         case "recursive"
-            M = macaulay(problem,problem.dmax,basis,order);
+            M = macaulay(problem, problem.dmax, basis, order);
             Z = null(full(M));
             for i = problem.dmax+1:d
-                M = macaulayupdate(M,problem,i,basis,order);
-                Z = nullrecrmacaulay(Z,M,tol);
+                M = macaulayupdate(M, problem, i, basis, order);
+                Z = nullrecrmacaulay(Z, M, tol);
             end
 
         case "sparse"
-            Z = null(full(macaulay(problem,problem.dmax,basis,order)));
+            Z = null(full(macaulay(problem, problem.dmax, basis, order)));
             for i = problem.dmax+1:d
-                Z = nullsparsemacaulay(Z,problem,i,tol,basis,order);
+                Z = nullsparsemacaulay(Z, problem, i, tol, basis, order);
             end
 
         otherwise

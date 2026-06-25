@@ -11,9 +11,10 @@ classdef testresiduals < matlab.unittest.TestCase
             P{2} = [1 2 0; 2 1 1; 1 0 2; -1 0 0];
             system = systemstruct(P);
             
-            [maxres, res] = residuals([1 0; 1 1; -1 2; 0 0],system);
+            [maxres, res] = residuals([1 0; 1 1; -1 2; 0 0], system, ...
+                "absolute");
             testCase.verifyEqual(maxres,16);
-            testCase.verifyEqual(res,[0; 3; 16; norm([-4 -1])]);
+            testCase.verifyEqual(res,[0; 3; 16; 5]);
         end
 
         function meptest(testCase)
@@ -22,7 +23,8 @@ classdef testresiduals < matlab.unittest.TestCase
             P{2} = [1 0; 1 0; 1 0];
             P{3} = [0 2; 0 2; 0 2];
             x = [2 1];
-            maxres = residuals(x,mepstruct(P,[0 0; 0 1; 1 0]));
+            maxres = residuals(x,mepstruct(P,[0 0; 0 1; 1 0]), ... 
+                "absolute");
             testCase.verifyLessThanOrEqual(maxres,testCase.tolerance);
         end
     end

@@ -1,18 +1,33 @@
-function q = contraction(p,d,n,varargin)
-    %CONTRACTION   Matrix representation of a polynomial.
-    %   q = CONTRACTION(p,d,n) contracts a polynomial p (with maximum
-    %   total degree d and n variables) given by its vector representation 
-    %   (in the graded reverse lexicographic ordering) into its 
-    %   corresponding coefficient matrix q.
+function q = contraction(p, d, m, varargin)
+    %CONTRACTION - Matrix representation of a polynomial.
+    %   q = CONTRACTION(p, d, m) contracts a polynomial given by its vector 
+    %   representation (in the graded reverse lexicographic ordering) into 
+    %   its corresponding coefficient matrix.
     %
-    %   q = CONTRACTION(...,tol) only considers coefficients larger
+    %   q = CONTRACTION(..., tol) only considers coefficients larger
     %   than the user-specified tolerance.
     %
-    %   q = CONTRACTION(...,order) uses a user-specified monomial order.
+    %   q = CONTRACTION(..., order) uses a user-specified monomial order.
+    %
+    %   Input arguments:
+    %       - p (double): polynomial in vector representation.
+    %       - d (int): maximum total degree.
+    %       - m (int): number of variables.
+    %       - tol (double = 1e-10 - optional): numerical tolerance for zero 
+    %           coefficients.
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - q (double): polynomial in coefficient-exponent matrix 
+    %           representation.
     %
     %   See also EXPANSION.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Process the optional parameters:
     tol = 1e-10;
@@ -31,6 +46,6 @@ function q = contraction(p,d,n,varargin)
     % Contract the polynomial:
     p = fliplr(p);
     mask = find(abs(p) > tol);
-    K = monomials(d,n,order);
-    q = [p(mask).' K(mask,:)];    
+    K = monomials(d, m, order);
+    q = [p(mask).' K(mask, :)];    
 end

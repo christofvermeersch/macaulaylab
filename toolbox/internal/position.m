@@ -1,16 +1,27 @@
-function pos = position(A,order)
-    %POSITION   Position of monomial.
+function pos = position(A, order)
+    %POSITION - Position of monomial.
     %   pos = POSITION(A) determines the position in the monomial basis of 
     %   the k monomials in the k-by-n matrix A. The function uses the 
     %   graded negative lexicographic order to assign a position. 
     %
-    %   pos = POSITION(...,order) uses a user-specified monomial order.
+    %   pos = POSITION(..., order) uses a user-specified monomial order.
     %   This function serves as an interface for the different implemented
     %   monomial orders.
     %
+    %   Input arguments:
+    %       - A (int): matrix of monomial exponent vectors (k-by-n).
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - pos (int): position vector.
+    %
     %   See also GRNLEX, GREVLEX, GRLEX, GRVLEX.
             
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
     
     % Set the default monomial order:
     if nargin < 2

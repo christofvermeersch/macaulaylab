@@ -1,29 +1,42 @@
-function [A,B] = multmapnull(Z,K,G,idx,varargin)
-    %MULTMAPNULL   Generalized multiplication matrices (right null space).
-    %   [A,B] = MULTMAPULL(Z,K,G,idx) sets-up the generalized
-    %   multiplication matrices for the shift polynomial in G. The matrix Z
-    %   contains (a selection of) the basis matrix of the null space and
-    %   the matrix K contains the monomials that belong to each row of that
-    %   Z. All the rows mentioned in idx are shifted. 
+function [A, B] = multmapnull(Z, K, G, idx, varargin)
+    %MULTMAPNULL - Generalized multiplication matrices (right null space).
+    %   [A, B] = MULTMAPNULL(Z, K, G, idx) sets-up the generalized
+    %   multiplication matrices for a shift polynomial.
     %
-    %   [A,B] = MULTMAPULL(Z,K,G,idx) can also work with multiple shift
-    %   polynomials combined in a cell array. The resulting matrices are
-    %   then also combined in cell arrays.
+    %   [A, B] = MULTMAPNULL(Z, K, G, idx) can also work with multiple 
+    %   shift polynomials combined in a cell array. The resulting matrices 
+    %   are then also combined in cell arrays.
     %
-    %   [A,B] = MULTMAPULL(...,blocksize) specifies the size of a block
-    %   row in Z (otherwise it is supposed to be equal to 1). If block size
-    %   is larger than 1, then the matrix K identifies the vector indices
-    %   with every monomial. 
+    %   [A, B] = MULTMAPNULL(..., blocksize) specifies the size of a block.
     %
-    %   [A,B] = MULTMAPULL(...,basis) uses a user-specified monomial
+    %   [A, B] = MULTMAPNULL(..., basis) uses a user-specified monomial
     %   basis.
     %
-    %   [A,B] = MULTMAPULL(...,order) supplements the function with
-    %   a function handle for the order of the monomials in K.
+    %   [A, B] = MULTMAPNULL(..., order) supplements the function with
+    %   a function handle for the order of the monomials.
+    %
+    %   Input arguments:
+    %       - Z (double): (selection of) basis matrix of the null space.
+    %       - K (int): monomial exponent matrix for each row of Z.
+    %       - G (double): shift polynomial(s) in coefficient-exponent 
+    %           format (or cell array for multiple shift polynomials).
+    %       - idx (int): row indices to shift.
+    %       - blocksize (int = 1 - optional): size of a block row in Z.
+    %       - basis (function_handle = @monomial - optional): monomial 
+    %           basis.
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - A (cell): first generalized multiplication matrices.
+    %       - B (cell): second generalized multiplication matrices.
     %
     %   See also MULTMAPCOLUMN.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
     
     % Process the optional parameters:
     blocksize = 1;
@@ -51,29 +64,29 @@ function [A,B] = multmapnull(Z,K,G,idx,varargin)
         isCell = false;
         G = {G};
     end
-    m = length(G);
-    n = size(G{1},2) - 1;
-   
+    nshifts = length(G);
+    m = size(G{1}, 2) - 1;
+
     % Compute the degree:
-    d = max(sum(K,2));
+    d = max(sum(K, 2));
 
     % Determine the selection of rows in the basis:
     if blocksize == 1
         selection = order(K);
     else
-        selection = (order(K(:,1:end-1))-1)*blocksize + K(:,end);
+        selection = (order(K(:, 1:end-1))-1)*blocksize + K(:, end);
     end
 
     % Define the generalized multiplication matrices:
-    A = cell(m,1);
-    B = cell(m,1);
-    for i = 1:m
+    A = cell(nshifts, 1);
+    B = cell(nshifts, 1);
+    for i = 1:nshifts
         % Create first generalized multiplication map:
-        A{i} = Z(idx,:);
+        A{i} = Z(idx, :);
 
         % Create second generalized multiplication map:
-        S = rowshift(d,n,idx,G{i},blocksize,basis,order);
-        B{i} = S(1:length(idx),selection)*Z;
+        S = rowshift(d, m, idx, G{i}, blocksize, basis, order);
+        B{i} = S(1:length(idx), selection)*Z;
     end
    
     % Change output to array when input shift polynomial is an array:

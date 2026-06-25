@@ -1,25 +1,28 @@
 function pos = grlex(A)
-    %GRLEX   Graded lexicographic monomial order.
-    %   pos = GRLEX(A) returns the position of a monomial in the monomial 
-    %   basis using the graded lexicographic order. The result is a k-by-1
-    %   vector that contains the position for every n-variate monomial in
-    %   the k-by-n matrix A. 
+    %GRLEX - Graded lexicographic monomial order.
+    %   pos = GRLEX(A) returns the position of a monomial in the monomial
+    %   basis using the graded lexicographic order. 
+    %
+    %   Input arguments:
+    %       - A (int): matrix of monomial exponent vectors with every row
+    %       corresponding to a different monomial.
+    %
+    %   Output arguments:
+    %       - pos (int): position vector in grlex order.
     %
     %   See also POSITION.
             
-    % Copyright (c) 2024 - Christof Vermeersch
-    % 
-    % Note that the code is not yet vectorized.
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: vectorized the computation in one direction.
+    %   - 2026 by CV: updated documentation and comments.
 
-    [nr,nc] = size(A);
-    pos = zeros(nr,1);
-    for k = 1:nr
-        v = A(k,:);
-        d = sum(v);
-        order = nbmonomials(d,nc);
-        for l = 1:nc
-            order = order - nbmonomials(sum(v(l+1:nc))-1,nc-l);
-        end
-        pos(k) = order;
+    [nr, nc] = size(A);
+    d = sum(A, 2);
+    pos = nbmonomials(d, nc);
+    S = [fliplr(cumsum(fliplr(A), 2)), zeros(nr, 1)];
+    for l = 1:nc
+        pos = pos - nbmonomials(S(:, l+1) - 1, nc - l);
     end
 end

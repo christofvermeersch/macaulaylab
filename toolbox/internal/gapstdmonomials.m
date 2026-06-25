@@ -1,20 +1,34 @@
-function [dgap,ma,gapsize] = gapstdmonomials(c,d,n,blocksize)
-    %GAPSTDMONOMIALS   Gap zone via the standard monomials.
-    %   dgap = GAPSTDMONOMIALS(c,d,n) returns the first degree of the gap
-    %   zone in the list of standard monomials or NaN if there is no gap 
-    %   zone. The monomials up to total degree d are considered.
+function [dgap, ma, gapsize] = gapstdmonomials(c, d, m, blocksize)
+    %GAPSTDMONOMIALS - Gap zone via the standard monomials.
+    %   dgap = GAPSTDMONOMIALS(c, d, m) returns the first degree of the gap
+    %   zone in the list of standard monomials or NaN if there is no gap
+    %   zone.
     %
-    %   [dgap,ma,gapsize] = GAPSTDMONOMIALS(c,d,n) also returns the 
-    %   number of affine solutions and the size of the gap zone (in number 
-    %   of degree blocks).
+    %   [dgap, ma, gapsize] = GAPSTDMONOMIALS(...) also returns the number
+    %   of affine solutions and the size of the gap zone.
     %
-    %   [...] = GAPSTDMONOMIALS(...,blocksize) considers the number of 
-    %   rows in the block rows (cf., the null space of block Macaulay 
+    %   [...] = GAPSTDMONOMIALS(..., blocksize) considers the number of
+    %   rows in the block rows (cf., the null space of block Macaulay
     %   matrix).
+    %
+    %   Input arguments:
+    %       - c (int): vector of standard monomial positions.
+    %       - d (int): maximum total degree to consider.
+    %       - m (int): number of variables.
+    %       - blocksize (int = 1 - optional): size of eigenvector.
+    %
+    %   Output arguments:
+    %       - dgap (int): first degree of the gap zone (NaN if none).
+    %       - ma (int): number of affine solutions.
+    %       - gapsize (int): size of the gap zone (in number of degree 
+    %           blocks).
     %
     %   See also STDMONOMIALS, COLUMNCOMPR, GAP.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Process the optional parameter:
     if nargin < 4
@@ -26,7 +40,7 @@ function [dgap,ma,gapsize] = gapstdmonomials(c,d,n,blocksize)
     gapsize = 0;
     dgap = NaN;
     for k = 0:d
-        nm = blocksize*nbmonomials(k,n);
+        nm = blocksize*nbmonomials(k, m);
         r = sum(c<=nm);
         if ma == r
             gapsize = gapsize + 1;

@@ -3,23 +3,23 @@ classdef testrandsystem < matlab.unittest.TestCase
         % Test the methods:
         function univariatetest(testCase)
             system = randsystem(1,4,1);
-            [s,dmax,n,di,nnze,k,l] = properties(system);
+            [s,dmax,m,di,nnze,k,l] = properties(system);
             expected = {1,4,1,{4},{5},1,1};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
         end
 
         function trivariatetest(testCase)
             system = randsystem(3,4,3);
-            [s,dmax,n,di,nnze,k,l] = properties(system);
+            [s,dmax,m,di,nnze,k,l] = properties(system);
             expected = {3,4,3,{4;4;4},{35;35;35},1,1};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
         end
 
         function overdeterminedtest(testCase)
             system = randsystem(3,3,2);
-            [s,dmax,n,di,nnze,k,l] = properties(system);
+            [s,dmax,m,di,nnze,k,l] = properties(system);
             expected = {3,3,2,{3;3;3},{10;10;10},1,1};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
         end
 
         function complextest(testCase)
@@ -41,9 +41,9 @@ classdef testrandsystem < matlab.unittest.TestCase
         function sparsetest(testCase)
             supp = {[0 0; 0 1; 2 0];[0 0; 3 0]};
             system = randsystem(2,3,2,supp);
-            [s,dmax,n,di,nnze,k,l] = properties(system);
+            [s,dmax,m,di,nnze,k,l] = properties(system);
             expected = {2,3,2,{2;3},{3;2},1,1};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
             testCase.verifyEqual(system.supp,supp);
         end
     end

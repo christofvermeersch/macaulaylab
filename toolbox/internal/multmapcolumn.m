@@ -1,31 +1,45 @@
-function [A,B] = multmapcolumn(M,K,G,idx,varargin)
-    %MULTMAPCOLUMN   Generalized multiplication matrices (column space).
-    %   [A,B] = MULTMAPCOLUMN(Z,K,G,idx) sets-up the generalized
-    %   multiplication matrices for the shift polynomial in G. The matrix M
-    %   contains (a selection of) the basis matrix of the column space
-    %   and the matrix K contains the monomials that belong to each row of
-    %   that M. All the columns mentioned in idx are shifted.
+function [A, B] = multmapcolumn(M, K, G, idx, varargin)
+    %MULTMAPCOLUMN - Generalized multiplication matrices (column space).
+    %   [A, B] = MULTMAPCOLUMN(M, K, G, idx) sets-up the generalized
+    %   multiplication matrices for the shift polynomial.
     %
-    %   [A,B] = MULTMAPCOLUMN(Z,K,G,idx) can also work with multiple shift
-    %   polynomials combined in a cell array. The resulting matrices are
-    %   then also combined in cell arrays.
+    %   [A, B] = MULTMAPCOLUMN(M, K, G, idx) can also work with multiple 
+    %   shift polynomials combined in a cell array. The resulting matrices 
+    %   are then also combined in cell arrays.
     %
-    %   [A,B] = MULTMAPCOLUMN(...,blocksize) specifies the size of a 
-    %   block row in M (otherwise it is supposed to be equal to 1). If
-    %   block size is larger than 1, then the matrix K identifies the
-    %   vector indices with every monomial.
+    %   [A, B] = MULTMAPCOLUMN(..., blocksize) specifies the size of a 
+    %   block column.
     %
-    %   [A,B] = MULTMAPCOLUMN(...,basis) uses a user-specified monomial 
+    %   [A, B] = MULTMAPCOLUMN(..., basis) uses a user-specified monomial 
     %   basis.
     %
-    %   [A,B] = MULTMAPCOLUMN(...,order) supplements the function with a
-    %   function handle for the order of the monomials in K.
+    %   [A, B] = MULTMAPCOLUMN(..., order) supplements the function with a
+    %   function handle for the order of the monomials.
+    %
+    %   Input arguments:
+    %       - M (double): (selection of) basis matrix of the column space.
+    %       - K (int): monomial exponent matrix for each row of Z.
+    %       - G (double): shift polynomial(s) in coefficient-exponent 
+    %           format (or cell array for multiple shift polynomials).
+    %       - idx (int): row indices to shift.
+    %       - blocksize (int = 1 - optional): size of a block row in Z.
+    %       - basis (function_handle = @monomial - optional): monomial 
+    %           basis.
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - A (cell): first generalized multiplication matrices.
+    %       - B (cell): second generalized multiplication matrices.
     %
     %   See also MULTMAPNULL.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
-    warning('Code is not optimized for efficiency.')
+    warning("Code is not optimized for efficiency.")
 
     % Process the optional parameters:
     blocksize = 1;
@@ -53,50 +67,50 @@ function [A,B] = multmapcolumn(M,K,G,idx,varargin)
         isCell = false;
         G = {G};
     end
-    m = length(G);
-    n = size(G{1},2) - 1;
+    nshifts = length(G);
+    m = size(G{1}, 2) - 1;
 
     % Compute the degree:
-    d = max(sum(K,2));
+    d = max(sum(K, 2));
 
     % Determine the selection of rows in the basis:
     if blocksize == 1
         selection = order(K);
     else
-        selection = (order(K(:,1:end-1))-1)*blocksize + K(:,end);
+        selection = (order(K(:, 1:end-1))-1)*blocksize + K(:, end);
     end
-    
+
     % Define the generalized multiplication matrices:
-    A = cell(m,1);
-    B = cell(m,1);
-    for i = 1:m
+    A = cell(nshifts, 1);
+    B = cell(nshifts, 1);
+    for i = 1:nshifts
         % Create the shiftmatrix:
-        Sg = rowshift(d,n,idx,G{i},blocksize,order,basis);
+
+        Sg = rowshift(d, m, idx, G{i}, blocksize, basis, order);
         B2 = [];
         for k = 1:length(idx)
-            Sghere = Sg(k,:);
+            Sghere = Sg(k, :);
             Sghere(idx) = 0;
             if ~any(Sghere)
                 B2 = [B2 k];
             end
         end
-        Sg = Sg(B2,1:length(idx));
-        
-        % Reorder the Macaulay matrix:
+        Sg = Sg(B2, 1:length(idx));
 
-        [Q,aff,hit] = rowrecomb(d,n,idx,G{i},blocksize,order,basis);
-        P = Q(selection,selection);
+        % Reorder the Macaulay matrix:
+        [Q, aff, hit] = rowrecomb(d, m, idx, G{i}, blocksize, order, basis);
+        P = Q(selection, selection);
         N = M/P;
 
         % Construct R33 and R34:
-        [~,R] = qr(fliplr(N),0);
+        [~, R] = qr(fliplr(N), 0);
         R = fliplr(R);
-        R33 = R(size(N,2)-aff-hit+1:size(N,2)-aff,aff+1:aff+hit);
-        R34 = R(size(N,2)-aff-hit+1:size(N,2)-aff,1:aff);
+        R33 = R(size(N, 2)-aff-hit+1:size(N, 2)-aff, aff+1:aff+hit);
+        R34 = R(size(N, 2)-aff-hit+1:size(N, 2)-aff, 1:aff);
         
         % Creat the generalized multiplication maps:
-        A{i} = [Sg; -R34];
-        B{i} = [eye(aff-hit) zeros(aff-hit,hit); zeros(hit,aff-hit) R33];
+        A{i} = [eye(aff-hit) zeros(aff-hit, hit); zeros(hit, aff-hit) R33];
+        B{i} = [Sg; -R34];
     end
 
     % Change output to array when input shift polynomial is an array:

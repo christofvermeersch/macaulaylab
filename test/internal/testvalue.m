@@ -56,27 +56,50 @@ classdef testvalue < matlab.unittest.TestCase
             end
         end 
 
+        function problemstructtest(testCase)
+            coef = {[1; 2]};
+            supp = {[3; 1]};
+            problem = problemstruct(coef, supp);
+            actual = value(-1, problem);
+            testCase.verifyEqual(actual, -3);
+        end
+
+        function cellinputtest(testCase)
+            p = [1 5 0; 2 2 2];
+            coef = {p(:, 1)};
+            supp = {p(:, 2:end)};
+            actual = value([1 1], coef, supp);
+            testCase.verifyEqual(actual, 3);
+        end
+
+        function columnpointtest(testCase)
+            p = [1 1 1; 2 2 0; 3 2 2];
+            system = systemstruct({p});
+            actual = value([1; 2], system);
+            testCase.verifyEqual(actual, 16);
+        end
+
         function meptest(testCase)
             P = {{[1 2; 3 4; 3 4]; [2 1; 0 1; 1 3]; zeros(3,2); ...
                 zeros(3,2); [3 4; 2 1; 0 1]; [1 2; 4 2; 2 1];}, ...
                 {ones(5,5); ones(5,5); ones(5,5); ones(5,5)}};
-            n = {2, 3};
+            m = {2, 3};
             dmax = {2, 1};
             x = {[2 2], [1 -2 3]};
 
             expected1 = {[21 28; 27 18; 13 18], 3*ones(5,5)};
-            expected2 = {[24 34; 39 24; 19 21], 3*ones(5,5)};            
+            expected2 = {[24 34; 39 24; 19 21], 3*ones(5,5)};
 
             for k = 1:2
-                mep = mepstruct(P{k},dmax{k},n{k});
-                val = value(x{k},mep);
+                mep = mepstruct(P{k},monomials(dmax{k},m{k}));
+                val = squeeze(value(x{k},mep));
                 testCase.verifyLessThanOrEqual(val-expected1{k}, ...
                     testCase.tolerance);
             end
 
             for k = 1:2
-                mep = mepstruct(P{k},dmax{k},n{k});
-                val = value(x{k},mep,@chebyshev);
+                mep = mepstruct(P{k},monomials(dmax{k},m{k}));
+                val = squeeze(value(x{k},mep,@chebyshev));
                 testCase.verifyLessThanOrEqual(val-expected2{k}, ...
                     testCase.tolerance);
             end

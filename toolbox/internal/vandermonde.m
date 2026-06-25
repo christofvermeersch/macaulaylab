@@ -1,24 +1,37 @@
-function V = vandermonde(d,n,x,varargin)
-    %VANDERMONDE   Multivariate (block) Vandermonde matrix.
-    %   V = VANDERMONDE(d,n,x) constructs the multivariate Vandermonde
+function V = vandermonde(d, m, x, varargin)
+    %VANDERMONDE - Multivariate (block) Vandermonde matrix.
+    %   V = VANDERMONDE(d, n, x) constructs the multivariate Vandermonde
     %   matrix in the standard monomial basis and graded reverse
     %   lexicographic order. The Vandermonde matrix is built from the
-    %   m different n-variate points in x (= m-by-n matrix).
+    %   given different m-variate points in x.
     %
-    %   V = VANDERMONDE(...,z) considers the blocked version instead, where
-    %   the l-by-1 vectors are given in z (= m-by-l matrix). In the result,
-    %   the elements of the vectors are also restructured as specified by
-    %   the monomial order.
+    %   V = VANDERMONDE(..., z) considers the blocked version instead. The 
+    %   elements of the vectors are also restructured as specified by the
+    %   monomial order.
     %
-    %   V = VANDERMONDE(...,order) works with a user-specified monomial
+    %   V = VANDERMONDE(..., order) works with a user-specified monomial
     %   order.
+    %
+    %   Input arguments:
+    %       - d (int): maximum total degree.
+    %       - m (int): number of variables.
+    %       - x (double): valuation points (every row is a point).
+    %       - z (double = ones - optional): eigenvector matrix.
+    %       - order (function_handle = @grevlex - optional): monomial 
+    %           order.
+    %
+    %   Output arguments:
+    %       - V (double): (block) Vandermonde matrix.
     %
     %   See also MONOMIALSMATRIX.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Process the optional parameters:
-    z = ones(1,size(x,1)); % default is already transposed.
+    z = ones(1, size(x, 1)); % default is already transposed.
     order = @grevlex;
     isDifferentOrder = false;
     for i = 1:nargin-3
@@ -34,20 +47,20 @@ function V = vandermonde(d,n,x,varargin)
     end
 
     % Restructure the vectors:
-    idx = order(eye(size(z,1)))-1;
-    z = z(idx,:);
+    idx = order(eye(size(z, 1)))-1;
+    z = z(idx, :);
 
     % Construct Vandermonde matrix:
-    K = monomials(d,n); 
-    V = zeros(size(K,1)*size(z,1),size(x,1));
-    for k = 1:size(x,1)
-        V(:,k) = kron(prod(x(k,:).^K,2),z(:,k));
+    K = monomials(d, m);
+    V = zeros(size(K, 1)*size(z, 1), size(x, 1));
+    for k = 1:size(x, 1)
+        V(:, k) = kron(prod(x(k, :).^K, 2), z(:, k));
     end
     
     % Change the order of the rows when a different monomial order is used:
     if isDifferentOrder
-        idx = kron(order(K)-1,size(z,1)*ones(size(z,1),1)) ...
-            + kron(ones(1,size(K,1)),1:size(z,1))';
-        V = V(idx,:);
+        idx = kron(order(K)-1, size(z, 1)*ones(size(z, 1), 1)) ...
+            + kron(ones(1, size(K, 1)), 1:size(z, 1))';
+        V = V(idx, :);
     end
 end

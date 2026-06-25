@@ -11,5 +11,13 @@ classdef testoutputstruct < matlab.unittest.TestCase
             testCase.verifyEqual(details.nullity,nullity);
             testCase.verifyEqual(details.shiftvalues,shiftvalues);
         end
+
+        function disptest(testCase)
+            time = ones(3,1);
+            nullity = ones(20,1);
+            shiftvalues = randn(3,1);
+            details = outputstruct(time, nullity, shiftvalues);
+            testCase.verifyWarningFree(@() disp(details));
+        end
     end
 end

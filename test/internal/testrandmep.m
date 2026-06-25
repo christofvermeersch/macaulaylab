@@ -3,16 +3,16 @@ classdef testrandmep < matlab.unittest.TestCase
         % Test the methods:
         function oneparametertest(testCase)
             mep = randmep(3,1,10,10);
-            [s,dmax,n,di,nnze,k,l] = properties(mep);
+            [s,dmax,m,di,nnze,k,l] = properties(mep);
             expected = {1,3,1,{3},{400},10,10};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
         end
 
         function twoparametertest(testCase)
             mep = randmep(2,2,5,4);
-            [s,dmax,n,di,nnze,k,l] = properties(mep);
+            [s,dmax,m,di,nnze,k,l] = properties(mep);
             expected = {1,2,2,{2},{120},5,4};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
         end
         
         function complextest(testCase)
@@ -34,9 +34,9 @@ classdef testrandmep < matlab.unittest.TestCase
         function sparsetest(testCase)
             supp = [0 0; 0 2; 2 0];
             mep = randmep(2,2,10,9,supp);
-            [s,dmax,n,di,nnze,k,l] = properties(mep);
+            [s,dmax,m,di,nnze,k,l] = properties(mep);
             expected = {1,2,2,{2},{270},10,9};
-            testCase.verifyEqual({s,dmax,n,di,nnze,k,l},expected);
+            testCase.verifyEqual({s,dmax,m,di,nnze,k,l},expected);
             mat = mep.coef{1};
             testCase.verifyTrue(nnz(squeeze(mat(1,:,:))) == 90);
             testCase.verifyTrue(nnz(squeeze(mat(2,:,:))) == 0);

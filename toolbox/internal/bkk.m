@@ -1,11 +1,20 @@
-function m = bkk(system)
-    %BKK   Solution bound for a multivariate polynomial system.
-    %   m = BKK(system) computes the Bernstein–Khovanskii–Kushnirenko (BKK)
+function b = bkk(system)
+    %BKK - Solution bound for a multivariate polynomial system.
+    %   b = BKK(system) computes the Bernstein–Khovanskii–Kushnirenko (BKK)
     %   solution bound for a multivariate polynomial system.
+    %
+    %   Input arguments:
+    %       - system (systemstruct): polynomial system.
+    %
+    %   Output arguments:
+    %       - b (int): BKK solution bound.
     %
     %   See also BEZOUT, KUSHNIRENKO.
     
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
     %
     % Note: this is a naive implementation of [1, Chapter 7, Theorem 4.12].
     %
@@ -13,17 +22,17 @@ function m = bkk(system)
     % Geometry, vol. 185, Springer, New York, NY, USA.
 
     % Verify input requirements:
-    if ~isa(system,"systemstruct")
+    if ~isa(system, "systemstruct")
         error("Only systemstruct is allowed as input.");
     end
 
     % Compute the BKK solution bound via Theorem 4.12:
-    m = 0;
-    for k = 1:system.n
-        combinations = nchoosek(1:system.n,k);
+    b = 0;
+    for k = 1:system.m
+        combinations = nchoosek(1:system.m, k);
         volume = 0;
-        for l = 1:size(combinations,1)
-            combo = combinations(l,:);
+        for l = 1:size(combinations, 1)
+            combo = combinations(l, :);
             B = cell(length(combo));
             for i = 1:length(combo)
                 B{i} = system.supp{combo(i)};
@@ -31,22 +40,27 @@ function m = bkk(system)
             [~, subvolume] = convhulln(minkowski(B));
             volume = volume + subvolume;
         end
-        m = m + (-1)^(system.n-k)*volume;   
+        b = b + (-1)^(system.m-k)*volume;   
     end
-    m = round(m);
+    b = round(b);
 end
 
 % Define the required subfunction:
-function sum = minkowski(A)
-    %MINKOWSKI   Minkowski sum of vertices.
-    %   sum = MINKOWSKI(A) computes the Minkowski sum of the vertices in A.
+function result = minkowski(A)
+    %MINKOWSKI - Minkowski sum of vertices.
+    %   result = MINKOWSKI(A) computes the Minkowski sum of the vertices in A.
+    %
+    %   Input arguments:
+    %       - A (cell): cell array of vertex matrices.
+    %
+    %   Output arguments:
+    %       - result (double): vertex matrix of the Minkowski sum.
 
-    sum = A{1};
+    result = A{1};
     for k = 2:length(A)
-        temp = [];
-        for l = 1:size(A{k},1)
-            temp = [temp; sum + A{k}(l,:)];
-        end
-        sum = unique(temp,"rows");
+        n1 = size(result, 1);
+        n2 = size(A{k}, 1);
+        temp = repmat(result, n2, 1) + repelem(A{k}, n1, 1);
+        result = unique(temp, "rows");
     end
 end

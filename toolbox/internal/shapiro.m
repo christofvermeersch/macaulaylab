@@ -1,17 +1,26 @@
-function m = shapiro(mep)
-    %SHAPIRO   Solution bound for a multiparameter eigenvalue problem.
-    %   m = SHAPIRO(mep) computes the Shapiro-Shapiro solution bound
+function b = shapiro(mep)
+    %SHAPIRO - Solution bound for a multiparameter eigenvalue problem.
+    %   b = SHAPIRO(mep) computes the Shapiro-Shapiro solution bound
     %   for a linear multiparameter eigenvalue problem.
+    %
+    %   Input arguments:
+    %       - mep (mepstruct): linear multiparameter eigenvalue problem.
+    %
+    %   Output arguments:
+    %       - b (int): Shapiro-Shapiro solution bound.
     %
     %   See also HKP.
 
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     % Verify input requirements:
-    if ~isa(mep,"mepstruct")
+    if ~isa(mep, "mepstruct")
         error("Only mepstruct is allowed as input.");
     end
 
     % Compute Shapiro-Shapiro number:
-    m = nchoosek(mep.n+mep.l-1,mep.n);
+    b = nchoosek(mep.m+mep.l-1, mep.m);
 end 

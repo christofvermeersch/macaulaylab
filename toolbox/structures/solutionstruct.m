@@ -1,17 +1,20 @@
 classdef solutionstruct
-    %SOLUTIONSTRUCT   Class for gathering all the solution data.
+    %SOLUTIONSTRUCT - Class for gathering all the solution data.
     %   obj = SOLUTIONSTRUCT(values) creates a structure that contains
     %   all the information about the solution(s).
     %
-    %   SOLUTIONSTRUCT properties:
-    %       values - numerical values.
+    %   List of properties:
+    %       - values (double): numerical values.
     %
     %   SOLUTIONSTRUCT methods:
-    %       num  - return the numerical values of the solution(s).
-    %       disp - displays the solution(s) the problem.
-    %       info - gives a more elaborate description of the solution(s).
+    %       - num: return the numerical values of the solution(s).
+    %       - disp: displays the solution(s) of the problem.
+    %       - info: gives a more elaborate description of the solution(s).
 
-    % Copyright (c) 2024 - Christof Vermeersch
+    % Copyright (c) 2026 - Christof Vermeersch
+    %
+    % Updates:
+    %   - 2026 by CV: updated documentation and comments.
 
     properties
         values
@@ -23,33 +26,54 @@ classdef solutionstruct
 
     methods
         function obj = solutionstruct(values)
-            %SOLUTIONSTRUCT   Constructor for the solutionstruct class.
-            %   obj = SOLUTIONSTRUCT(values) creates a structure that 
+            %SOLUTIONSTRUCT - Constructor for the solutionstruct class.
+            %   obj = SOLUTIONSTRUCT(values) creates a structure that
             %   contains all the information about the solutions.
+            %
+            %   Input arguments:
+            %       - values (double): numerical solution values.
+            %
+            %   Output arguments:
+            %       - obj (solutionstruct): solution structure.
 
             obj.values = values;
         end 
 
         function values = num(obj)
-            %NUM   Numerical values of the solution(s).
+            %NUM - Numerical values of the solution(s).
             %   values = NUM(solutions) returns the numerical values of the
             %   solution(s).
+            %
+            %   Input arguments:
+            %       - obj (solutionstruct): solution structure.
+            %
+            %   Output arguments:
+            %       - values (double): numerical solution values.
 
             values = obj.values;
         end
 
         
         function disp(obj)
-            %DISP   Solution(s) of a problem.
-            %   DISP(solutions) displays the solution(s) the problem.
+            %DISP - Solution(s) of a problem.
+            %   DISP(solutions) displays the solution(s) of the problem.
+            %
+            %   Input arguments:
+            %       - obj (solutionstruct): solution structure.
 
             disp(num(obj))
         end
 
         function output = info(obj)
-            %INFO   Information about the solution(s).
-            %   INFO(solutions) gives a more elaborate description of the 
+            %INFO - Information about the solution(s).
+            %   INFO(solutions) gives a more elaborate description of the
             %   solution(s).
+            %
+            %   Input arguments:
+            %       - obj (solutionstruct): solution structure.
+            %
+            %   Output arguments:
+            %       - output (string): description (when nargout > 0).
             
             text = sprintf("    total number of solutions: %d \n", ...
                 obj.mb);
